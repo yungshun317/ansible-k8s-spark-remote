@@ -1,0 +1,57 @@
+---
+- name: spark
+  hosts: master 
+  gather_facts: no
+
+  vars:
+    ansible_become_pass: "ccma"
+
+  tasks:
+    - name: Download Spark binary file
+      get_url:
+        url: http://ftp.tc.edu.tw/pub/Apache/spark/spark-2.3.1/spark-2.3.1-bin-hadoop2.7.tgz
+        dest: /home/ccma/spark-2.3.1-bin-hadoop2.7.tgz
+        mode: 0440
+
+    - name: Extract Spark file
+      become: yes
+      unarchive:
+        src: /home/ccma/spark-2.3.1-bin-hadoop2.7.tgz
+        dest: /usr/local
+        remote_src: yes
+
+    - name: Add Spark symlink
+      become: yes
+      file:
+        state: link
+        src: /usr/local/spark-2.3.1-bin-hadoop2.7
+        dest: /usr/local/spark
+
+    - name: Set Spark Home
+      become: yes
+      lineinfile:
+        dest: /etc/environment
+        regexp: ^.*(SPARK_HOME).*$
+        line: SPARK_HOME=/usr/local/spark
+      register: spark_home
+
+    - name: Debug spark_home
+      debug:
+        var: spark_home
+
+    - name: Set Spark Path
+      lineinfile:
+        dest: ~/.bashrc
+        regexp: ^.*(\$+SPARK_HOME).*$
+        line: export PATH=$PATH:$SPARK_HOME/bin
+      register: spark_path
+
+    - name: Debug spark_path
+      debug:
+        var: spark_path
+
+    - name: Clean downloaded package
+      file:
+        state: absent
+        path: /home/ccma/spark-2.3.1-bin-hadoop2.7.tgz
+
