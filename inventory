@@ -1,0 +1,15 @@
+[master]
+10.236.1.1
+
+[minion]
+10.236.1.2
+10.236.1.3
+
+[ccma:children]
+master
+minion
+
+[ccma:vars]
+ansible_connection = ssh
+ansible_user = ccma
+ansible_ssh_pass = ccma
