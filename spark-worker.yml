@@ -1,0 +1,27 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata: 
+  labels:
+    name: spark-worker
+  name: spark-worker
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: spark-worker
+    spec:
+      containers:
+      - image: ccma/spark
+        imagePullPolicy: "IfNotPresent"
+        name: spark-worker
+        ports:
+        - containerPort: 7078
+          protocol: TCP
+        command:
+        - "/bin/bash"
+        - "-c"
+        - "--"
+        args:
+        - './start-worker.sh ; sleep infinity'
