@@ -7,6 +7,18 @@
     ansible_become_pass: "ccma"
 
   tasks:
+    - name: Copy .yml files to k8s master
+      copy: 
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: ccma
+        group: ccma
+      with_items:
+        - { src: "nginx.yml", dest: "/home/ccma/nginx.yml" }
+        - { src: "spark-master.yml", dest: "/home/ccma/spark-master.yml" }
+        - { src: "spark-master-service.yml", dest: "/home/ccma/spark-master-service.yml" }    
+
+    # Spark image
     - name: Download Spark binary file
       get_url:
         url: http://ftp.tc.edu.tw/pub/Apache/spark/spark-2.3.1/spark-2.3.1-bin-hadoop2.7.tgz
@@ -64,3 +76,14 @@
     - name: Debug build_spark_image
       debug:
         var: build_spark_image
+
+    # nginx
+    - name: Create an nginx deployment
+      shell: "kubectl create -f nginx.yml"
+      args:
+        chdir: /home/ccma
+      register: create_nginx
+
+    - name: Debug create_nginx
+      debug:
+        var: create_nginx
