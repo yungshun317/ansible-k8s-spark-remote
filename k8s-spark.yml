@@ -17,6 +17,7 @@
         - { src: "nginx.yml", dest: "/home/ccma/nginx.yml" }
         - { src: "spark-master.yml", dest: "/home/ccma/spark-master.yml" }
         - { src: "spark-master-service.yml", dest: "/home/ccma/spark-master-service.yml" }    
+        - { src: "spark-worker.yml", dest: "/home/ccma/spark-worker.yml" }
 
     # Spark image
     - name: Download Spark binary file
@@ -87,3 +88,34 @@
     - name: Debug create_nginx
       debug:
         var: create_nginx
+
+    # Spark
+    - name: Create a spark-master deployment
+      shell: "kubectl create -f spark-master.yml"
+      args:
+        chdir: /home/ccma
+      register: create_spark_master
+
+    - name: Debug create_spark_master
+      debug:
+        var: create_spark_master
+
+    - name: Create a spark-master service
+      shell: "kubectl create -f spark-master-service.yml"
+      args:
+        chdir: /home/ccma
+      register: create_spark_master_svc
+
+    - name: Debug create_spark_master_svc
+      debug:
+        var: create_spark_master_svc
+
+    - name: Create a spark-worker deployment
+      shell: "kubectl create -f spark-worker.yml"
+      args:
+        chdir: /home/ccma
+      register: create_spark_worker
+
+    - name: Debug create_spark_worker
+      debug:
+        var: create_spark_worker
