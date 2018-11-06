@@ -13,7 +13,7 @@ spec:
         name: spark-worker
     spec:
       containers:
-      - image: ccma/spark
+      - image: yungshun317/spark
         imagePullPolicy: "IfNotPresent"
         name: spark-worker
         ports:
@@ -24,4 +24,4 @@ spec:
         - "-c"
         - "--"
         args:
-        - './start-worker.sh ; sleep infinity'
+        - './start-worker.sh ; while sleep 3600; do :; done'

@@ -69,7 +69,7 @@
         path: /home/ccma/spark-2.3.1-bin-hadoop2.7.tgz
 
     - name: Build Spark Docker image using docker-image-tool.sh
-      shell: "./bin/docker-image-tool.sh -r ccma -t latest build"
+      shell: "./bin/docker-image-tool.sh -r yungshun317 -t latest build"
       args: 
         chdir: /usr/local/spark/
       register: build_spark_image
@@ -77,6 +77,21 @@
     - name: Debug build_spark_image
       debug:
         var: build_spark_image
+
+    - name: Log into DockerHub 
+      docker_login:
+        username: yungshun317
+        password: Seraph051379
+        
+    - name: Push Spark Docker image using docker-image-tool.sh
+      shell: "./bin/docker-image-tool.sh -r yungshun317 -t latest push"
+      args: 
+        chdir: /usr/local/spark/
+      register: push_spark_image
+
+    - name: Debug push_spark_image
+      debug:
+        var: push_spark_image
 
     # nginx
     - name: Create an nginx deployment

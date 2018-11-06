@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: spark-master
-        image: ccma/spark
+        image: yungshun317/spark
         imagePullPolicy: "IfNotPresent"
         name: spark-master
         ports:
@@ -25,4 +25,4 @@ spec:
         - "-c"
         - "--"
         args:
-        - './start-master.sh ; sleep infinity'
+        - './start-master.sh ; while sleep 3600; do :; done'
