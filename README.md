@@ -1,3 +1,25 @@
+# Ansible k8s Spark
+[![Work with Ansible](https://img.shields.io/badge/Work%20with-Ansible-brightgreen.svg)](https://img.shields.io/badge/Work%20with-Ansible-brightgreen.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
+
+An Ansible playbook deploys a scalable Spark cluster in Kubernetes. It is a try of this [Running Spark on Kubernetes](https://spark.apache.org/docs/latest/running-on-kubernetes.html) feature. 
+
+ - The recommended way for running Spark applications on Kubernetes cluster is using [spark-on-k8s-operator](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator). 
+ - To setup Spark standalone cluster on Kubernetes cluster, please refer to my another project, [Ansible k8s Helm Spark](https://github.com/yungshun317/ansible-k8s-helm-spark). 
+ - With Docker Swarm mode, refer to [Ansible Docker Swarm Spark](https://github.com/yungshun317/ansible-docker-swarm-spark).
+
+## Requirements
+
+|Package|Version|  
+|:-----:|:-----:|  
+|python2|2.7.12|  
+|ansible|2.7.2|
+
+## Usage
+Run `ansible-playbook` softly. 
+```sh
+$ ansible-playbook k8s-spark.yml
+```
+
 Based on description from [deployment instruction](https://spark.apache.org/docs/latest/running-on-kubernetes.html), submission process container several steps:
 
 1. Spark creates a Spark driver running within a Kubernetes pod.
@@ -6,6 +28,7 @@ Based on description from [deployment instruction](https://spark.apache.org/docs
 
 So, in fact, you have no place to submit a job until you starting a submission process, which will launch a first Spark's pod (driver) for you. And after application completes, everything terminated.
 
+```sh
 $ kubectl exec -it spark-master-768d6764b6-499dn bash
 bash-4.4# /opt/spark/bin/spark-shell --master k8s://https://10.236.1.1:6443
 Error: Client mode is currently not supported for Kubernetes.
@@ -111,6 +134,29 @@ $ ./bin/spark-submit --master k8s://https://10.236.1.1:6443 --deploy-mode cluste
 $ kubectl get pod spark-pi-driver
 NAME                READY   STATUS      RESTARTS   AGE
 spark-pi-driver     0/1     Completed   0          3m10s
+```
 
+## Outline
+The playbook does:
+1. Install Spark.
+2. Build and push Spark Docker images using `docker-image-tool.sh`.
+3. Create an nginx Deployment.
+4. Create Spark master and worker Deployments.
+5. Create Spark master and worker Services.
 
+Note that I did not create `serviceaccount` and `clusterrolebinding` in the playbook, so I have to create them manually like above.
 
+## Tech
+This project uses:
+* [Ansible](https://www.ansible.com/) - Ansible is open source software that automates software provisioning, configuration management, and application deployment.
+* [Docker](https://github.com/docker/docker-ce) - a computer program that performs operating-system-level virtualization, also known as containerization.
+* [Kubernetes](https://kubernetes.io/) - an open-source system for automating deployment, scaling, and management of containerized applications.
+* [Spark](https://spark.apache.org/) - Apache Spark™ is a unified analytics engine for large-scale data processing.
+
+## Todos
+ - Write an Ansible playbook for [spark-on-k8s-operator](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator).
+ - Try [Helm Chart for Spark History Server](https://github.com/helm/charts/tree/master/stable/spark-history-server).
+ - Be familiar with using Spark on Kubernetes cluster.
+
+## License
+[Ansible k8s Spark](https://github.com/yungshun317/ansible-k8s-spark) is released under the [MIT License](https://opensource.org/licenses/MIT) by [yungshun317](https://github.com/yungshun317).
